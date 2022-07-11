@@ -7,6 +7,7 @@ use App\Http\Requests\AddBookAuthorRequest;
 use App\Http\Requests\CreateBookRequest;
 use App\Models\Author;
 use App\Models\Book;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,8 @@ use Illuminate\Http\Response;
 class BookController extends Controller
 {
 
+    protected $model = Book::class;
+
     /**
      * Show all books
      * @param Request $request
@@ -22,13 +25,11 @@ class BookController extends Controller
      */
     public function all(Request $request)
     {
-        $filters = array_filter([
-            'name' => $request->get('name'),
-            'publish_date' => $request->get('publish_date'),
-            'annotation' => $request->get('annotation')
-        ]);
+        $filters = (new Book)->handleFilters($request->query());
 
-        return count($filters) ? Book::with('authors')->where($filters)->get() : Book::with('authors')->get();
+        return count($filters)
+            ? Book::with('authors')->where($filters)->get()
+            : Book::with('authors')->get();
     }
 
     /**
@@ -38,14 +39,12 @@ class BookController extends Controller
      */
     public function paginate(Request $request)
     {
-        $filters = array_filter([
-            'name' => $request->get('name'),
-            'publish_date' => $request->get('publish_date'),
-            'annotation' => $request->get('annotation')
-        ]);
 
-        return count($filters) ? Book::with('authors')->where($filters)->paginate() : Book::with('authors')->paginate();
-        //return Book::query()->paginate();
+        $filters = (new Book)->handleFilters($request->query());
+
+        return count($filters)
+            ? Book::with('authors')->where($filters)->paginate()
+            : Book::with('authors')->paginate();
     }
 
     /**
@@ -75,32 +74,7 @@ class BookController extends Controller
      */
     public function create(CreateBookRequest $request)
     {
-        $data = $request->validated();
-
-        //Book::create($data)->push();
-        $bookId = Book::create($data)->id;
-
-        return response(['id' => $bookId], 201);
-    }
-
-    /**
-     * Delete the book
-     * @param int $bookId
-     * @return Response
-     */
-    public function delete(int $bookId)
-    {
-
-        $book = Book::find($bookId);
-
-        if (!$book) {
-            return response('Book not found', 404);
-        }
-
-        $book->delete();
-
-        return response('Deleted',200);
-        //return response('Deleted',204);
+        return $this->_create($request);
     }
 
     /**
@@ -121,15 +95,13 @@ class BookController extends Controller
 
         $authorId = reset($data);
 
-        $bookAuthor = $book->authors()->where(['author_id' => $authorId])->get();
-
-        if(count($bookAuthor) > 0) {
-            throw new \InvalidArgumentException("Author already added to the book");
-        }
-
         $author = Author::find($authorId);
         if (!$author) {
             return response('Author not found', 404);
+        }
+
+        if( $book->hasAuthor($authorId) ) {
+            return response('Author already added to the book', 422);
         }
 
         $book->authors()->attach($authorId);
@@ -152,15 +124,19 @@ class BookController extends Controller
             return response('Book not found', 404);
         }
 
-        $bookAuthor = $book->authors()->where(['author_id' => $authorId])->get();
-        if(count($bookAuthor) == 0) {
-            throw new \InvalidArgumentException("Author not found in book");
+        if( !$book->hasAuthor($authorId) ) {
+            return response('Author not found in book', 422);
         }
+
+//        $bookAuthor = $book->authors()->where(['author_id' => $authorId])->get();
+//        if(count($bookAuthor) == 0) {
+//            throw new \InvalidArgumentException("Author not found in book");
+//        }
 
         $book->authors()->detach($authorId);
 
-        return response('Deleted',200);
-        //return response('Deleted', 204);
+        //return response('Deleted',200);
+        return response('Deleted', 204);
     }
 
     /**

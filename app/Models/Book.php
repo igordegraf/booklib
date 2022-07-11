@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Book extends Model
+class Book extends BaseModel
 {
     use HasFactory;
 
@@ -55,4 +55,15 @@ class Book extends Model
 //        'updated_at'
     ];
 
+    /**
+     * Есть ли заданный автор среди авторов книги
+     * @param int $authorId
+     * @return bool
+     */
+    public function hasAuthor(int $authorId)
+    {
+        $bookAuthor = $this->authors()->where(['author_id' => $authorId])->get();
+
+        return count($bookAuthor) > 0;
+    }
 }

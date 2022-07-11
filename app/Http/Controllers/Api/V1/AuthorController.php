@@ -5,28 +5,41 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateAuthorRequest;
 use App\Models\Author;
-use App\Models\Book;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class AuthorController extends Controller
 {
+
+    protected $model = Author::class;
+
     /**
      * Show all authors
+     * @param Request $request
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function all()
+    public function all(Request $request)
     {
-        return Author::withCount('books')->get();
+        $filters = (new Author())->handleFilters($request->query());
+
+        return count($filters)
+            ? Author::with('authors')->withCount('books')->where($filters)->get()
+            : Author::withCount('books')->get();
     }
 
     /**
      * Show all authors with pagination
+     * @param Request $request
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate()
+    public function paginate(Request $request)
     {
-        return Author::withCount('books')->paginate();
+        $filters = (new Author())->handleFilters($request->query());
+
+        return count($filters)
+            ? Author::with('authors')->withCount('books')->where($filters)->paginate()
+            : Author::withCount('books')->paginate();
     }
 
     /**
@@ -56,42 +69,16 @@ class AuthorController extends Controller
      */
     public function create(CreateAuthorRequest $request)
     {
-        $data = $request->validated();
-
-        //Author::create($data)->push();
-        $authorId = Author::create($data)->id;
-
-        return response(['id' => $authorId], 201);
+        return $this->_create($request);
     }
 
-
-    /**
-     * Delete author
-     * @param int $authorId
-     * @return Response
-     */
-    public function delete(int $authorId)
-    {
-
-        $author = Author::find($authorId);
-
-        if (!$author) {
-            return response('Author not found', 404);
-        }
-
-        $author->delete();
-
-        return response('Deleted',200);
-        //return response('Deleted',204);
-    }
 
     /**
      * Get books of author
-     * @param Request $request
      * @param int $authorId
      * @return Response
      */
-    public function books(Request $request, int $authorId)
+    public function books(int $authorId)
     {
         $author = Author::find($authorId);
 

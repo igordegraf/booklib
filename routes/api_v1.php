@@ -41,5 +41,3 @@ Route::prefix('author')->group(function() {
 });
 
 Route::fallback(function () { return response('Bad Request', 400);});
-
-
