@@ -17,12 +17,13 @@ Booklib is HTTP REST api service for handling books
 - Убрать pivot объект из relation выборок (аторы к книгам и книги к авторам)
 
 ## Available methods for Books 
-- (POST) api/v1/book                             | create_book 
+- (POST) api/v1/book                             | create_book
 - (GET) api/v1/book                              | get_all_books_paginate  
 - (GET) api/v1/book/by_author/{author_id}        | find_books_by_author    
 - (GET) api/v1/book/raw                          | get_all_books           
 - (GET) api/v1/book/{book_id}                    | get_one_book
-- (DELETE) api/v1/book/{book_id}                  | delete_one_book         
+- (POST) api/v1/book/{book_id}                   | update_book
+- (DELETE) api/v1/book/{book_id}                 | delete_one_book         
 - (POST) api/v1/book/{book_id}/author            | add_author
 - (DELETE) api/v1/book/{book_id}/author/{author_id} | delete_author_from_book        
 - (GET) api/v1/book/{book_id}/authors            | get_book_authors
@@ -32,6 +33,7 @@ Booklib is HTTP REST api service for handling books
 - (POST) api/v1/author                           | create_author
 - (GET) api/v1/author/raw                        | get_all_authors
 - (GET) api/v1/author/{author_id}                | get_one_author
+- (POST) api/v1/author/{author_id}               | update_author
 - (DELETE) api/v1/author/{author_id}             | delete_one_author
 - (GET) api/v1/author/{author_id}/books          | authors_books
 
