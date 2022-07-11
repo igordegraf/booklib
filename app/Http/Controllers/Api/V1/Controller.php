@@ -19,7 +19,7 @@ class Controller extends BaseController
 
     /**
      * Create new record
-     * @param CreateAuthorRequest $request
+     * @param FormRequest $request
      * @return Response
      */
     public function _create(FormRequest $request)
@@ -37,6 +37,32 @@ class Controller extends BaseController
     }
 
     /**
+     * Update record
+     * @param FormRequest $request
+     * @param int $recordId
+     * @return Response
+     */
+    public function _update(FormRequest $request, int $recordId)
+    {
+        if(!$this->model) {
+            return response('Internal Server Error. Bad controller configuration.', 500);
+        }
+
+        $data = $request->validated();
+
+        $record = ($this->model)::find($recordId);
+
+        if (!$record) {
+            return response('Record not found', 404);
+        }
+
+        //$record->fill($data)->save();
+        $record->update($data);
+
+        return response('Updated', 204);
+    }
+
+    /**
      * Delete the record
      * @param int $recordId
      * @return Response
@@ -47,13 +73,13 @@ class Controller extends BaseController
             return response('Internal Server Error. Bad controller configuration.', 500);
         }
 
-        $book = ($this->model)::find($recordId);
+        $record = ($this->model)::find($recordId);
 
-        if (!$book) {
+        if (!$record) {
             return response('Record not found', 404);
         }
 
-        $book->delete();
+        $record->delete();
 
         //return response('Deleted',200);
         return response('Deleted', 204);

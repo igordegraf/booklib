@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\AddBookAuthorRequest;
-use App\Http\Requests\CreateBookRequest;
+use App\Http\Requests\CreateOrUpdateBookRequest;
 use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Database\Eloquent\Model;
@@ -68,12 +68,23 @@ class BookController extends Controller
 
     /**
      * Create new book
-     * @param CreateBookRequest $request
+     * @param CreateOrUpdateBookRequest $request
      * @return Response
      */
-    public function create(CreateBookRequest $request)
+    public function create(CreateOrUpdateBookRequest $request)
     {
         return $this->_create($request);
+    }
+
+    /**
+     * Update book
+     * @param CreateOrUpdateBookRequest $request
+     * @param int $bookId
+     * @return Response
+     */
+    public function update(CreateOrUpdateBookRequest $request, int $bookId)
+    {
+        return $this->_update($request, $bookId);
     }
 
     /**

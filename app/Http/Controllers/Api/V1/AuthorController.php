@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\CreateAuthorRequest;
+use App\Http\Requests\CreateOrUpdateBookRequest;
 use App\Models\Author;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -71,6 +72,16 @@ class AuthorController extends Controller
         return $this->_create($request);
     }
 
+    /**
+     * Update author
+     * @param CreateAuthorRequest $request
+     * @param int $authorId
+     * @return Response
+     */
+    public function update(CreateAuthorRequest $request, int $authorId)
+    {
+        return $this->_update($request, $authorId);
+    }
 
     /**
      * Get books of author
