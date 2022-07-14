@@ -67,3 +67,12 @@ POST params (form-data):
 - birth_date (DATE in format YYYY-MM-DD)
 - death_date (NOT REQUIRED) (DATE in format YYYY-MM-DD)
 
+## add_author
+POST params (form-data):
+- author_id (INT)
+
+## update_book
+See: create_book params
+
+## update_author
+See: create_author params

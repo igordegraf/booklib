@@ -28,9 +28,9 @@ class TestDataSeeder extends Seeder
         ]);
 
         $authorId3 = DB::table('author')->insertGetId([
-            'fio' => "Фамилия2 Имя2 Отчество2",
-            'birth_date' => Date::create(1991,3, 1),
-            'death_date' => Date::create(2020,5, 1),
+            'fio' => "Фамилия3 Имя3 Отчество3",
+            'birth_date' => Date::create(1980,8, 8),
+            'death_date' => Date::create(2000,10, 10),
         ]);
 
         $book1 = DB::table('book')->insertGetId([
